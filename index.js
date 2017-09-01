@@ -5,6 +5,7 @@ const sbConnection = require('./connection');
 
 if (sbConnection) {
   const argument = process.argv[2];
+  const topic = process.argv[3];
 
   if (argument) {
     switch (argument) {
@@ -16,6 +17,16 @@ if (sbConnection) {
       case 'listSubscriptions': {
         const listSubscriptions = require('./listSubscriptions.js');
         listSubscriptions.run(sbConnection);
+        break;
+      }
+      case 'watchTopic': {
+        const watchTopic = require('./watchTopic.js');
+        watchTopic.run(sbConnection, topic);
+        break;
+      }
+      case 'deleteSubscription': {
+        const deleteSubscription = require('./deleteSubscription.js');
+        deleteSubscription.run(sbConnection);
         break;
       }
       default: {

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "listTopics": "node index.js listTopics",
-    "listSubscriptions": "node index.js listSubscriptions"
+    "listSubscriptions": "node index.js listSubscriptions",
+    "watchTopic": "node index.js watchTopic",
+    "deleteSubscription": "node index.js deleteSubscription"
   },
   "repository": {
     "type": "git",
