@@ -1,0 +1,25 @@
+{
+  "name": "az-service-bus-scripts",
+  "version": "1.0.0",
+  "description": "A collection of node scripts that provide convenient cli access to service bus.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "listTopics": "node index.js listTopics",
+    "listSubscriptions": "node index.js listSubscriptions"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChuckLangford/az-service-bus-scripts.git"
+  },
+  "author": "Chuck Langford",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChuckLangford/az-service-bus-scripts/issues"
+  },
+  "homepage": "https://github.com/ChuckLangford/az-service-bus-scripts#readme",
+  "dependencies": {
+    "azure": "^2.0.0-preview",
+    "joi": "^10.6.0"
+  }
+}
