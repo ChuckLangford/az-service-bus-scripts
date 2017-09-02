@@ -2,40 +2,83 @@
 // http://azure.github.io/azure-sdk-for-node/
 
 const sbConnection = require('./connection');
+const readline = require('readline');
+const displayConfig = require('./displayConfig.js');
+const listSubscriptions = require('./listSubscriptions.js');
+const listTopics = require('./listTopics.js');
+const watchTopic = require('./watchTopic.js');
+const deleteSubscription = require('./deleteSubscription.js');
 
-if (sbConnection) {
-  const argument = process.argv[2];
-  const topic = process.argv[3];
+let sigintCallback;
 
-  if (argument) {
-    switch (argument) {
-      case 'listTopics': {
-        const listTopics = require('./listTopics.js');
-        listTopics.run(sbConnection);
-        break;
-      }
-      case 'listSubscriptions': {
-        const listSubscriptions = require('./listSubscriptions.js');
-        listSubscriptions.run(sbConnection);
-        break;
-      }
-      case 'watchTopic': {
-        const watchTopic = require('./watchTopic.js');
-        watchTopic.run(sbConnection, topic);
-        break;
-      }
-      case 'deleteSubscription': {
-        const deleteSubscription = require('./deleteSubscription.js');
-        deleteSubscription.run(sbConnection);
-        break;
-      }
-      default: {
-        console.log('Invalid argument');
-      }
-    }
-  } else {
-    console.log('Invalid argument');
-  }
-} else {
-  console.log('Could not find a Service Bus connection');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  prompt: 'AZ-SB> ',
+});
+
+function prompt() {
+  console.log();
+  rl.prompt();
 }
+
+rl.on('line', (line) => {
+  switch (line.trim()) {
+    case 'help':
+      console.log();
+      console.log('Available commands:');
+      console.log();
+      console.log(' deleteSubscription - Deletes the current subscription in the configuration.');
+      console.log(' displayConfig      - Displays the current configuration.');
+      console.log(' exit               - Exit this tool.');
+      console.log(' listSubscriptions  - Lists all subscriptions for the configured topic.');
+      console.log(' listTopics         - Lists all topics for the current Service Bus connection. Also displays a count of topics.');
+      console.log(' watchTopic         - Creates a temporary subscription on the configured topic and displays incoming messages.');
+      prompt();
+      break;
+    case 'displayConfig': {
+      displayConfig.run(prompt);
+      break;
+    }
+    case 'exit': {
+      rl.close();
+      break;
+    }
+    case 'listSubscriptions': {
+      listSubscriptions.run(sbConnection, prompt);
+      break;
+    }
+    case 'listTopics': {
+      listTopics.run(sbConnection, prompt);
+      break;
+    }
+    case 'watchTopic': {
+      sigintCallback = watchTopic.onSIGINT;
+      watchTopic.run(sbConnection, prompt);
+      break;
+    }
+    case 'deleteSubscription': {
+      deleteSubscription.run(sbConnection, prompt);
+      break;
+    }
+    default:
+      console.log('Invalid command. Type \'help\' for a list of valid commands.');
+      prompt();
+      break;
+  }
+})
+  .on('SIGINT', () => {
+    if (sigintCallback && typeof sigintCallback === 'function') {
+      sigintCallback();
+      sigintCallback = null;
+    } else {
+      rl.close();
+    }
+  })
+  .on('close', () => {
+    console.log();
+    process.exit(0);
+  });
+
+console.log('Type \'help\' to get started.');
+prompt();

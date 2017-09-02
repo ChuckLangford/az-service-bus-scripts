@@ -1,21 +1,27 @@
 const config = require('./config.js');
 
-function watchTopic(sbConnection, topic) {
-  const temporarySubscriptionName = `temp-subscription-${Date.now()}`;
+let temporarySubscriptionName;
+let topicToWatch;
+let done;
+let connection;
+let interval;
 
-  sbConnection.deleteSubscription(topic, temporarySubscriptionName, (error) => {
+function watchTopic() {
+  connection.deleteSubscription(topicToWatch, temporarySubscriptionName, (error) => {
     if (error.statusCode !== 404) {
       console.log(error);
+      done();
     } else {
-      sbConnection.createSubscription(topic, temporarySubscriptionName, (err) => {
+      connection.createSubscription(topicToWatch, temporarySubscriptionName, (err) => {
         if (err) {
           console.log(err);
+          done();
         } else {
           console.log(`Created subscription: ${temporarySubscriptionName}`);
-          setInterval(() => {
-            sbConnection.receiveSubscriptionMessage(topic, temporarySubscriptionName,
+          interval = setInterval(() => {
+            connection.receiveSubscriptionMessage(topicToWatch, temporarySubscriptionName,
               (e, message) => {
-                if (e !== 'No messages to receive' && e) {
+                if (e !== 'No messages to receive' && e !== 'Error: NotFound' && e) {
                   console.log(`Error: ${e}`);
                 } else if (message) {
                   console.log(message);
@@ -26,27 +32,29 @@ function watchTopic(sbConnection, topic) {
       });
     }
   });
+}
 
-  process.on('SIGINT', () => {
-    sbConnection.deleteSubscription(topic, temporarySubscriptionName, (error) => {
-      if (error) {
-        console.log(`Error removing the temporary subscription: ${temporarySubscriptionName}`);
-      }
-      console.log();
-      console.log(`Deleted subscription ${temporarySubscriptionName}`);
-      process.exit();
-    });
+function onSIGINT() {
+  clearInterval(interval);
+  connection.deleteSubscription(topicToWatch, temporarySubscriptionName, (error) => {
+    if (error) {
+      console.log(`Error removing the temporary subscription: ${temporarySubscriptionName}`);
+    }
+    console.log();
+    console.log(`Deleted subscription ${temporarySubscriptionName}`);
+    done();
   });
 }
 
-function run(sbConnection, topic) {
-  let topicToWatch = topic;
-  if (!topicToWatch) {
-    topicToWatch = config.TOPIC;
-  }
+function run(sbConnection, cb) {
+  temporarySubscriptionName = `temp-subscription-${Date.now()}`;
+  topicToWatch = config.TOPIC;
+  done = cb;
+  connection = sbConnection;
 
   console.log(`Watching topic ${topicToWatch}`);
-  watchTopic(sbConnection, topicToWatch);
+  watchTopic(sbConnection, temporarySubscriptionName);
 }
 
 module.exports.run = run;
+module.exports.onSIGINT = onSIGINT;

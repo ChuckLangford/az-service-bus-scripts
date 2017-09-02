@@ -1,3 +1,5 @@
+let done;
+
 function getNext(sbConnection, numberOfTopics, skip, count) {
   let updatedCount = count;
   sbConnection.listTopics({ top: numberOfTopics, skip }, (error, result) => {
@@ -13,12 +15,14 @@ function getNext(sbConnection, numberOfTopics, skip, count) {
         getNext(sbConnection, numberOfTopics, skip + numberOfTopics, updatedCount);
       } else {
         console.log(`Total Number of Topics: ${updatedCount}`);
+        done();
       }
     }
   });
 }
 
-function run(sbConnection) {
+function run(sbConnection, cb) {
+  done = cb;
   getNext(sbConnection, 100, 0, 0);
 }
 

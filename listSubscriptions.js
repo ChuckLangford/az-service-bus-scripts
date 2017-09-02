@@ -1,6 +1,6 @@
 const config = require('./config.js');
 
-function run(sbConnection) {
+function run(sbConnection, cb) {
   sbConnection.listSubscriptions(config.TOPIC, (err, subscriptions) => {
     if (err) {
       console.log(err);
@@ -19,6 +19,8 @@ function run(sbConnection) {
         console.log(subscription.SubscriptionName);
       });
     }
+
+    cb();
   });
 }
 

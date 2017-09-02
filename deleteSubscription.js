@@ -1,6 +1,6 @@
 const config = require('./config.js');
 
-function run(sbConnection) {
+function run(sbConnection, cb) {
   console.log(`Attempting to delete ${config.SUBSCRIPTION} on ${config.TOPIC}`);
   sbConnection.deleteSubscription(config.TOPIC, config.SUBSCRIPTION, (error) => {
     if (error) {
@@ -8,6 +8,7 @@ function run(sbConnection) {
     } else {
       console.log('Done');
     }
+    cb();
   });
 }
 
