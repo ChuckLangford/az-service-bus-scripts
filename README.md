@@ -1,2 +1,6 @@
 # az-service-bus-scripts
-A collection of node scripts that provide convenient cli access to service bus.
+A node cli for interacting with Azure Service Bus
+
+## Getting Started
+
+Clone the repo and run `npm install`. Run with `node index.js`.
