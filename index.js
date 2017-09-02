@@ -27,8 +27,13 @@ function prepareLineInput(line) {
   const allArgs = trimmedLine.split(' ');
   return {
     command: allArgs[0],
-    modifier: allArgs[1],
+    modifier1: allArgs[1],
+    modifier2: allArgs[2],
   };
+}
+
+function registerSIGINTCallback(fn) {
+  sigintCallback = fn;
 }
 
 rl.on('line', (line) => {
@@ -38,10 +43,11 @@ rl.on('line', (line) => {
       console.log();
       console.log('Available commands:');
       console.log();
-      console.log(' deleteSubscription - Deletes the current subscription in the configuration.');
+      console.log(' clear              - Clears the screen.');
+      console.log(' deleteSubscription - Deletes the specified subscription.');
       console.log(' displayConfig      - Displays the current configuration.');
       console.log(' exit               - Exit this tool.');
-      console.log(' listSubscriptions  - Lists all subscriptions for the configured topic.');
+      console.log(' listSubscriptions  - Lists all subscriptions for the specified topic.');
       console.log(' listTopics         - Lists all topics for the current Service Bus connection. Also displays a count of topics.');
       console.log(' watchTopic         - Creates a temporary subscription on the configured topic and displays incoming messages.');
       prompt();
@@ -55,7 +61,7 @@ rl.on('line', (line) => {
       break;
     }
     case 'listSubscriptions': {
-      listSubscriptions.run(sbConnection, prompt);
+      listSubscriptions.run(sbConnection, input.modifier1, prompt);
       break;
     }
     case 'listTopics': {
@@ -63,14 +69,26 @@ rl.on('line', (line) => {
       break;
     }
     case 'watchTopic': {
-      sigintCallback = watchTopic.onSIGINT;
-      watchTopic.run(sbConnection, prompt);
+      registerSIGINTCallback(watchTopic.onSIGINT);
+      watchTopic.run(sbConnection, input.modifier1, prompt);
       break;
     }
     case 'deleteSubscription': {
-      rl.question('Are you sure you want to delete? ', (answer) => {
-        if (answer.match(/^y(es)?$/i)) deleteSubscription.run(sbConnection, prompt);
-      });
+      if (input.modifier1 && input.modifier2) {
+        const q = `Are you sure you want to delete ${input.modifier1}/${input.modifier2}? `;
+        rl.question(q, (a) => {
+          if (a.match(/^y(es)?$/i)) {
+            deleteSubscription.run(sbConnection, input.modifier1, input.modifier2, prompt);
+          }
+        });
+      } else {
+        console.log('You must specifiy both a topic and a subscription.');
+        prompt();
+      }
+      break;
+    }
+    case 'clear': {
+      rl.write(null, { ctrl: true, name: 'l' });
       break;
     }
     default:
