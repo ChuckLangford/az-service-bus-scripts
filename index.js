@@ -8,6 +8,7 @@ const listSubscriptions = require('./listSubscriptions.js');
 const listTopics = require('./listTopics.js');
 const watchTopic = require('./watchTopic.js');
 const deleteSubscription = require('./deleteSubscription.js');
+const help = require('./help.js');
 
 let sigintCallback;
 
@@ -40,17 +41,7 @@ rl.on('line', (line) => {
   const input = prepareLineInput(line);
   switch (input.command) {
     case 'help':
-      console.log();
-      console.log('Available commands:');
-      console.log();
-      console.log(' clear              - Clears the screen.');
-      console.log(' deleteSubscription - Deletes the specified subscription.');
-      console.log(' displayConfig      - Displays the current configuration.');
-      console.log(' exit               - Exit this tool.');
-      console.log(' listSubscriptions  - Lists all subscriptions for the specified topic.');
-      console.log(' listTopics         - Lists all topics for the current Service Bus connection. Also displays a count of topics.');
-      console.log(' watchTopic         - Creates a temporary subscription on the configured topic and displays incoming messages.');
-      prompt();
+      help.run(prompt);
       break;
     case 'displayConfig': {
       displayConfig.run(prompt);
