@@ -9,6 +9,7 @@ const listTopics = require('./listTopics.js');
 const watchTopic = require('./watchTopic.js');
 const deleteSubscription = require('./deleteSubscription.js');
 const help = require('./help.js');
+const subscriptionMsgCount = require('./subMsgCount.js');
 
 let sigintCallback;
 
@@ -80,6 +81,10 @@ rl.on('line', (line) => {
     }
     case 'clear': {
       rl.write(null, { ctrl: true, name: 'l' });
+      break;
+    }
+    case 'subscriptionMsgCount': {
+      subscriptionMsgCount.run(sbConnection, input.modifier1, input.modifier2, prompt);
       break;
     }
     default:
