@@ -22,8 +22,18 @@ function prompt() {
   rl.prompt();
 }
 
+function prepareLineInput(line) {
+  const trimmedLine = line.trim();
+  const allArgs = trimmedLine.split(' ');
+  return {
+    command: allArgs[0],
+    modifier: allArgs[1],
+  };
+}
+
 rl.on('line', (line) => {
-  switch (line.trim()) {
+  const input = prepareLineInput(line);
+  switch (input.command) {
     case 'help':
       console.log();
       console.log('Available commands:');
@@ -58,7 +68,9 @@ rl.on('line', (line) => {
       break;
     }
     case 'deleteSubscription': {
-      deleteSubscription.run(sbConnection, prompt);
+      rl.question('Are you sure you want to delete? ', (answer) => {
+        if (answer.match(/^y(es)?$/i)) deleteSubscription.run(sbConnection, prompt);
+      });
       break;
     }
     default:
