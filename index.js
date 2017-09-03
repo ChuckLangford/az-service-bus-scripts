@@ -1,15 +1,15 @@
 // Documentation for azure node sdk can be found here:
 // http://azure.github.io/azure-sdk-for-node/
 
-const sbConnection = require('./connection');
 const readline = require('readline');
-const displayConfig = require('./displayConfig.js');
-const listSubscriptions = require('./listSubscriptions.js');
-const listTopics = require('./listTopics.js');
-const watchTopic = require('./watchTopic.js');
-const deleteSubscription = require('./deleteSubscription.js');
-const help = require('./help.js');
-const subscriptionMsgCount = require('./subMsgCount.js');
+const sbConnection = require('./connection');
+const displayConfig = require('./scripts/displayConfig.js');
+const listSubscriptions = require('./scripts/listSubscriptions.js');
+const listTopics = require('./scripts/listTopics.js');
+const watchTopic = require('./scripts/watchTopic.js');
+const deleteSubscription = require('./scripts/deleteSubscription.js');
+const help = require('./scripts/help.js');
+const subscriptionMsgCount = require('./scripts/subMsgCount.js');
 
 let sigintCallback;
 

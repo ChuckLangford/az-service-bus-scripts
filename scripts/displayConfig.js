@@ -1,4 +1,4 @@
-const config = require('./config');
+const config = require('../config');
 
 function run(cb) {
   console.log();
