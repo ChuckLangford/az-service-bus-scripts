@@ -1,10 +1,10 @@
-function run(sbConnection, topic, subscription, cb) {
-  console.log(`Attempting to delete ${subscription} on ${topic}`);
+function run(output, sbConnection, topic, subscription, cb) {
+  output(`Attempting to delete ${subscription} on ${topic}`);
   sbConnection.deleteSubscription(topic, subscription, (error) => {
     if (error) {
-      console.log(error);
+      output(error);
     } else {
-      console.log('Done');
+      output('Done');
     }
     cb();
   });

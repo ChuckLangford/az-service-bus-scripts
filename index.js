@@ -3,6 +3,7 @@
 
 const readline = require('readline');
 const sbConnection = require('./connection');
+const output = require('./output/console');
 const displayConfig = require('./scripts/displayConfig.js');
 const listSubscriptions = require('./scripts/listSubscriptions.js');
 const listTopics = require('./scripts/listTopics.js');
@@ -20,7 +21,7 @@ const rl = readline.createInterface({
 });
 
 function prompt() {
-  console.log();
+  output();
   rl.prompt();
 }
 
@@ -42,10 +43,10 @@ rl.on('line', (line) => {
   const input = prepareLineInput(line);
   switch (input.command) {
     case 'help':
-      help.run(prompt);
+      help.run(output, prompt);
       break;
     case 'displayConfig': {
-      displayConfig.run(prompt);
+      displayConfig.run(output, prompt);
       break;
     }
     case 'exit': {
@@ -53,16 +54,16 @@ rl.on('line', (line) => {
       break;
     }
     case 'listSubscriptions': {
-      listSubscriptions.run(sbConnection, input.modifier1, prompt);
+      listSubscriptions.run(output, sbConnection, input.modifier1, prompt);
       break;
     }
     case 'listTopics': {
-      listTopics.run(sbConnection, prompt);
+      listTopics.run(output, sbConnection, prompt);
       break;
     }
     case 'watchTopic': {
       registerSIGINTCallback(watchTopic.onSIGINT);
-      watchTopic.run(sbConnection, input.modifier1, prompt);
+      watchTopic.run(output, sbConnection, input.modifier1, prompt);
       break;
     }
     case 'deleteSubscription': {
@@ -70,11 +71,11 @@ rl.on('line', (line) => {
         const q = `Are you sure you want to delete ${input.modifier1}/${input.modifier2}? `;
         rl.question(q, (a) => {
           if (a.match(/^y(es)?$/i)) {
-            deleteSubscription.run(sbConnection, input.modifier1, input.modifier2, prompt);
+            deleteSubscription.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
           }
         });
       } else {
-        console.log('You must specifiy both a topic and a subscription.');
+        output('You must specifiy both a topic and a subscription.');
         prompt();
       }
       break;
@@ -84,11 +85,11 @@ rl.on('line', (line) => {
       break;
     }
     case 'subscriptionMsgCount': {
-      subscriptionMsgCount.run(sbConnection, input.modifier1, input.modifier2, prompt);
+      subscriptionMsgCount.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
       break;
     }
     default:
-      console.log('Invalid command. Type \'help\' for a list of valid commands.');
+      output('Invalid command. Type \'help\' for a list of valid commands.');
       prompt();
       break;
   }
@@ -102,9 +103,9 @@ rl.on('line', (line) => {
     }
   })
   .on('close', () => {
-    console.log();
+    output();
     process.exit(0);
   });
 
-console.log('Type \'help\' to get started.');
+output('Type \'help\' to get started.');
 prompt();

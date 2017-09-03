@@ -3,29 +3,33 @@ let topicToWatch;
 let done;
 let connection;
 let interval;
+let createOutput;
 
 function clean() {
   temporarySubscriptionName = null;
   topicToWatch = null;
   interval = null;
   connection = null;
+  createOutput = null;
 }
 
 function watchTopic() {
   connection.createSubscription(topicToWatch, temporarySubscriptionName, (err) => {
     if (err) {
-      console.log(err);
+      createOutput(err);
       clean();
       done();
     } else {
-      console.log(`Created temporary subscription: ${temporarySubscriptionName}`);
+      createOutput(`Created temporary subscription: ${temporarySubscriptionName}`);
       interval = setInterval(() => {
         connection.receiveSubscriptionMessage(topicToWatch, temporarySubscriptionName,
           (e, message) => {
             if (e && e !== 'No messages to receive' && e !== 'Error: NotFound') {
-              console.log(`${e}`);
+              if (createOutput && typeof createOutput === 'function') {
+                createOutput(`${e}`);
+              }
             } else if (message) {
-              console.log(message);
+              createOutput(message);
             }
           });
       }, 100);
@@ -38,31 +42,32 @@ function onSIGINT() {
     clearInterval(interval);
     connection.deleteSubscription(topicToWatch, temporarySubscriptionName, (error) => {
       if (error) {
-        console.log(`Error removing the temporary subscription: ${temporarySubscriptionName}`);
+        createOutput(`Error removing the temporary subscription: ${temporarySubscriptionName}`);
       }
-      console.log();
-      console.log(`Deleted temporary subscription ${temporarySubscriptionName}`);
+      createOutput();
+      createOutput(`Deleted temporary subscription ${temporarySubscriptionName}`);
 
       clean();
       done();
     });
   } else {
-    console.log('User calls to onSIGINT are invalid.');
+    createOutput('User calls to onSIGINT are invalid.');
   }
 }
 
-function run(sbConnection, topic, cb) {
+function run(output, sbConnection, topic, cb) {
   if (!topic) {
-    console.log('You must specify a topic to watch.');
+    output('You must specify a topic to watch.');
     cb();
   } else {
     temporarySubscriptionName = `temp-subscription-${Date.now()}`;
     topicToWatch = topic;
     done = cb;
     connection = sbConnection;
+    createOutput = output;
 
-    console.log(`Watching topic ${topicToWatch}. Press CTRL+C to exit.`);
-    watchTopic(sbConnection, temporarySubscriptionName);
+    output(`Watching topic ${topicToWatch}. Press CTRL+C to exit.`);
+    watchTopic();
   }
 }
 

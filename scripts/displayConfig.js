@@ -1,9 +1,9 @@
 const config = require('../config');
 
-function run(cb) {
-  console.log();
-  console.log(`CONN_STRING: ${config.CONN_STRING}`);
-  console.log();
+function run(output, cb) {
+  output();
+  output(`CONN_STRING: ${config.CONN_STRING}`);
+  output();
   cb();
 }
 
