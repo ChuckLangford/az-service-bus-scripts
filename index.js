@@ -11,6 +11,9 @@ const watchTopic = require('./scripts/watchTopic.js');
 const deleteSubscription = require('./scripts/deleteSubscription.js');
 const help = require('./scripts/help.js');
 const subscriptionMsgCount = require('./scripts/subMsgCount.js');
+const listRules = require('./scripts/listRules.js');
+const peekDeadLetter = require('./scripts/peekDeadLetter.js');
+const createMessage = require('./scripts/createMessage.js');
 
 let sigintCallback;
 
@@ -86,6 +89,18 @@ rl.on('line', (line) => {
     }
     case 'subscriptionMsgCount': {
       subscriptionMsgCount.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
+      break;
+    }
+    case 'listRules': {
+      listRules.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
+      break;
+    }
+    case 'peekDeadLetter': {
+      peekDeadLetter.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
+      break;
+    }
+    case 'createMessage': {
+      createMessage.run(output, sbConnection, input.modifier1, prompt);
       break;
     }
     default:
