@@ -9,11 +9,15 @@ const listSubscriptions = require('./scripts/listSubscriptions.js');
 const listTopics = require('./scripts/listTopics.js');
 const watchTopic = require('./scripts/watchTopic.js');
 const deleteSubscription = require('./scripts/deleteSubscription.js');
+const deleteTopic = require('./scripts/deleteTopic.js');
 const help = require('./scripts/help.js');
 const subscriptionMsgCount = require('./scripts/subMsgCount.js');
 const listRules = require('./scripts/listRules.js');
 const peekDeadLetter = require('./scripts/peekDeadLetter.js');
+const peekSubscription = require('./scripts/peekSubscription.js');
 const createMessage = require('./scripts/createMessage.js');
+const createTopic = require('./scripts/createTopic.js');
+const createSubscription = require('./scripts/createSubscription.js');
 
 let sigintCallback;
 
@@ -83,6 +87,20 @@ rl.on('line', (line) => {
       }
       break;
     }
+    case 'deleteTopic': {
+      if (input.modifier1) {
+        const q = `Are you sure you want to delete ${input.modifier1}? `;
+        rl.question(q, (a) => {
+          if (a.match(/^y(es)?$/i)) {
+            deleteTopic.run(output, sbConnection, input.modifier1, prompt);
+          }
+        });
+      } else {
+        output('You must specifiy a topic.');
+        prompt();
+      }
+      break;
+    }
     case 'clear': {
       rl.write(null, { ctrl: true, name: 'l' });
       break;
@@ -99,8 +117,20 @@ rl.on('line', (line) => {
       peekDeadLetter.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
       break;
     }
+    case 'peekSubscription': {
+      peekSubscription.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
+      break;
+    }
     case 'createMessage': {
       createMessage.run(output, sbConnection, input.modifier1, prompt);
+      break;
+    }
+    case 'createTopic': {
+      createTopic.run(output, sbConnection, input.modifier1, prompt);
+      break;
+    }
+    case 'createSubscription': {
+      createSubscription.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
       break;
     }
     default:
