@@ -18,7 +18,7 @@ function run(output, sbConnection, topic, cb) {
         }
 
         subscriptions.forEach((subscription) => {
-          output(subscription.SubscriptionName);
+          output(subscription);
         });
       }
 

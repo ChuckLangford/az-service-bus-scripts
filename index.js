@@ -18,6 +18,7 @@ const peekSubscription = require('./scripts/peekSubscription.js');
 const createMessage = require('./scripts/createMessage.js');
 const createTopic = require('./scripts/createTopic.js');
 const createSubscription = require('./scripts/createSubscription.js');
+const peekQueue = require('./scripts/peekQueue.js');
 
 let sigintCallback;
 
@@ -119,6 +120,10 @@ rl.on('line', (line) => {
     }
     case 'peekSubscription': {
       peekSubscription.run(output, sbConnection, input.modifier1, input.modifier2, prompt);
+      break;
+    }
+    case 'peekQueue': {
+      peekQueue.run(output, sbConnection, input.modifier1, prompt);
       break;
     }
     case 'createMessage': {

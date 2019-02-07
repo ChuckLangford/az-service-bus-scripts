@@ -15,6 +15,7 @@ function run(output, cb) {
   output(' listTopics           - Lists all topics for the current Service Bus connection. Also displays a count of topics.');
   output(' peekDeadLetter       - Displays first retrieved message in specified dead letter queue.');
   output(' peekSubscription     - Peeklocks and displays first retrieved message in the specified subscription.');
+  output(' peekQueue            - Peeklocks and displays first retrieved message in the specified queue.');
   output(' subscriptionMsgCount - Displays the current count of messages in the specified subscription.');
   output(' watchTopic           - Creates a temporary subscription on the configured topic and displays incoming messages.');
   cb();
